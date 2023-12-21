@@ -69,6 +69,60 @@ void AUL231220_CPPCharacter::BeginPlay()
 	}
 }
 
+void AUL231220_CPPCharacter::Shoot(const FInputActionValue& Value)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("Shoot"));
+	ServerShootMontage();
+}
+
+void AUL231220_CPPCharacter::ServerShootMontage_Implementation()
+{
+	NetMulticastShootMontage();
+}
+
+void AUL231220_CPPCharacter::NetMulticastShootMontage_Implementation()
+{
+	PlayAnimMontage(ShootMontage);
+}
+
+void AUL231220_CPPCharacter::Reload(const FInputActionValue& Value)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("Reload"));
+	ServerReloadMontage();
+}
+
+void AUL231220_CPPCharacter::ServerReloadMontage_Implementation()
+{
+	NetMulticastReloadMontage();
+}
+
+void AUL231220_CPPCharacter::NetMulticastReloadMontage_Implementation()
+{
+	PlayAnimMontage(ReloadMontage);
+}
+
+void AUL231220_CPPCharacter::PressF(const FInputActionValue& Value)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("PressF"));
+	RequestPressF();
+}
+
+void AUL231220_CPPCharacter::RequestPressF_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, TEXT("Request Press F"));
+	ResponsePressF();
+}
+
+void AUL231220_CPPCharacter::ResponsePressF_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, TEXT("Response Press F"));
+}
+
+void AUL231220_CPPCharacter::ClientResponsePressF_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, TEXT("Client Response Press F"));
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -86,6 +140,15 @@ void AUL231220_CPPCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AUL231220_CPPCharacter::Look);
+
+		// Shooting
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &AUL231220_CPPCharacter::Shoot);
+
+		// PressF
+		EnhancedInputComponent->BindAction(PressFAction, ETriggerEvent::Started, this, &AUL231220_CPPCharacter::PressF);
+	
+		// Reloading
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &AUL231220_CPPCharacter::Reload);
 	}
 	else
 	{

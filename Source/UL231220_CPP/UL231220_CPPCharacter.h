@@ -44,6 +44,18 @@ class AUL231220_CPPCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	/** Shoot Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ShootAction;
+
+	/** PressF Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* PressFAction;
+
+	/** Reload Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ReloadAction;
+
 public:
 	AUL231220_CPPCharacter();
 	
@@ -55,6 +67,15 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	/** Called for shooting input */
+	void Shoot(const FInputActionValue& Value);
+
+	/** Called for pressing F input */
+	void PressF(const FInputActionValue& Value);
+
+	// Called for reload input
+	void Reload(const FInputActionValue& Value);
 			
 
 protected:
@@ -69,5 +90,34 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-};
 
+public:
+	//Network
+	UFUNCTION(Server, Reliable)
+	void RequestPressF();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ResponsePressF();
+
+	UFUNCTION(Client, Reliable)
+	void ClientResponsePressF();
+
+	UFUNCTION(Server, Reliable)
+	void ServerShootMontage();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticastShootMontage();
+
+	UFUNCTION(Server, Reliable)
+	void ServerReloadMontage();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticastReloadMontage();
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAnimMontage* ShootMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAnimMontage* ReloadMontage;
+};
